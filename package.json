@@ -1,0 +1,21 @@
+{
+  "name": "moi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^0.20.0",
+    "express": "^4.13.4",
+    "mongoose": "^4.4.16",
+    "morgan": "^1.7.0",
+    "url-parse": "^1.1.1"
+  },
+  "devDependencies": {
+    "request": "^2.72.0"
+  }
+}
