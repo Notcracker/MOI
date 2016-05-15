@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 var request = require('request');
 var cheerio = require('cheerio');
 var URL = require('url-parse');
@@ -58,18 +57,20 @@ function GetStats() {
 	
 	var meanScore = 0;
 	var L = 0;
-	var Arr = Arry;
+	var Arry = Arr;
 	Arry.forEach(function(value, index){
 		request(value.uri, function(err, res, body){
-			console.log('Visiting page ' + value.uri);
-			console.log('Status code: ' + res.statusCode);
+			
 			var $ = cheerio.load(body, { xmlMode: true });
 			value['genres'] = [];
 			$('div').has('span:contains("Genres:")').children('a').each(function(i, element){
 				value.genres.push($(this).text());
 		})
+		console.log(value.genres);
 		
+		});
 	});
+
 };
 
 
