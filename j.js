@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 var http = require('http');
 var cheerio = require('cheerio');
 var URL = require('url-parse');

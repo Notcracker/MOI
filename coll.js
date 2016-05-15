@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 var request = require('request');
 var cheerio = require('cheerio');
 var URL = require('url-parse');
@@ -11,7 +12,6 @@ var Arr = [];
 
 
 
-console.time(visitPage);
 visitPage(START_URL);
 
 
@@ -65,11 +65,27 @@ function GetStats() {
 			console.log('Status code: ' + res.statusCode);
 			var $ = cheerio.load(body, { xmlMode: true });
 			value['genres'] = [];
-			value.genres.push($('div').has('span:contains("Genres:")').children('a').text());
+			$('div').has('span:contains("Genres:")').children('a').each(function(i, element){
+				value.genres.push($(this).text());
 		})
 		
 	});
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
