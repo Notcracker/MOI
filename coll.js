@@ -1,6 +1,12 @@
 var request = require('request');
 var cheerio = require('cheerio');
 var URL = require('url-parse');
+var MongoClient = require('mongodb').MongoClient,
+	assert = require('assert');
+
+
+// Connection URL
+var urlm = 'mongodb://localhost:27017/conFusion';
 
 var START_URL = "http://myanimelist.net/malappinfo.php?u=soodesune&status=all&type=anime";
 var url = new URL(START_URL);
@@ -33,11 +39,11 @@ function visitPage(url) {
 	 	if(allEpisodes === watchedEp){
 		 	Arr.push({ uri: baseUrl + '/anime/' + id.text(),
 		 		seriesTitle: $(this).children('series_title').text(),
-		 		score: parseInt($(this).children('my_score').text()),
+		 		score: Number($(this).children('my_score').text()),
 		 		tags: $(this).children('my_tags').text()
 		 	});}
-	 	if ((parseInt($(this).children('my_score').text()))!==0){
-			meanScore = parseInt($(this).children('my_score').text()) + meanScore;
+	 	if ((Number($(this).children('my_score').text()))!==0){
+			meanScore = Number($(this).children('my_score').text()) + meanScore;
 			console.log(meanScore);
 			L = L+1;
 		}
@@ -54,24 +60,41 @@ function visitPage(url) {
 /*q или bluebird*/
 
 function GetStats() {
+	MongoClient.connect(urlm,function(err,db){
+		assert.equal(err,null);
+		console.log('Connected correctly to server');
 	
-	var meanScore = 0;
-	var L = 0;
-	var Arry = Arr;
-	Arry.forEach(function(value, index){
-		request(value.uri, function(err, res, body){
+		var meanScore = 0;
+		var L = 0;
+		var Arry = Arr;
+		Arry.forEach(function(value, index){
+			request(value.uri, function(err, res, body){
+				
+				var $ = cheerio.load(body, { xmlMode: true });
+				value['genres'] = [];
+				value['gScore'] = 0;
+				$('div').has('span:contains("Genres:")').children('a').each(function(i, element){
+					value.genres.push($(this).text());
+				})
+				value.gScore = Number($('span[itemprop="ratingValue"]').text());
+				console.log(value.genres, value.gScore);
 			
-			var $ = cheerio.load(body, { xmlMode: true });
-			value['genres'] = [];
-			$('div').has('span:contains("Genres:")').children('a').each(function(i, element){
-				value.genres.push($(this).text());
-		})
-		console.log(value.genres);
+
+					var collection = db.collection('mal');
+					collection.insert(value, {continueOnError: true}, function(err, result) {
+							assert.equal(err,null);
+							
+						});
 		
-		});
+			});
+		}).then(db.close());
+
 	});
 
-};
+};		
+
+			
+		
 
 
 
