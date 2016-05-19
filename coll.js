@@ -21,7 +21,7 @@ visitPage(START_URL);
 
 
 function visitPage(url) {
-
+	console.time('function')
 	// Make the request
 	console.log("Visiting page " + url);
 	request(url, function(error, response, body) {
@@ -60,14 +60,12 @@ function visitPage(url) {
 /*q или bluebird*/
 
 function GetStats() {
-	MongoClient.connect(urlm,function(err,db){
-		assert.equal(err,null);
-		console.log('Connected correctly to server');
 	
 		var meanScore = 0;
 		var L = 0;
 		var Arry = Arr;
 		Arry.forEach(function(value, index){
+			
 			request(value.uri, function(err, res, body){
 				
 				var $ = cheerio.load(body, { xmlMode: true });
@@ -78,20 +76,21 @@ function GetStats() {
 				})
 				value.gScore = Number($('span[itemprop="ratingValue"]').text());
 				console.log(value.genres, value.gScore);
-			
+				
+				MongoClient.connect(urlm,function(err,db){
+					assert.equal(err,null);
+					console.log('Connected correctly to server');
 
-					var collection = db.collection('mal');
+					var collection = db.collection('mally');
 					collection.insert(value, {continueOnError: true}, function(err, result) {
 							assert.equal(err,null);
-							
+							db.close();		
+							console.timeEnd('function');					
 						});
-		
 			});
-		}).then(db.close());
-
-	});
-
-};		
+			});
+		});
+	};	
 
 			
 		
